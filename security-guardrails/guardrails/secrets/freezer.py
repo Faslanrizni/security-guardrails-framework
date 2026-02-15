@@ -27,12 +27,12 @@ class RepoFreezer:
         """
         Freeze the repository
         """
-        print(f"\n🚨 FREEZING REPOSITORY: {self.repo_name}")
+        print(f"\n FREEZING REPOSITORY: {self.repo_name}")
         print(f"Secret type: {secret_type}")
         print(f"Description: {description}")
         
         if not self.token:
-            print("⚠️ No GitHub token provided - simulation mode")
+            print(" No GitHub token provided - simulation mode")
             print("\nWould freeze repo by:")
             print("1. Enabling branch protection")
             print("2. Locking all PRs")
@@ -41,20 +41,20 @@ class RepoFreezer:
             return
         
         # In a real implementation, this would call GitHub API
-        print(f"\n✅ Repository {self.repo_name} has been frozen")
+        print(f"\n Repository {self.repo_name} has been frozen")
         print(f"Action required: Rotate the exposed {secret_type} immediately")
     
     def unfreeze(self):
         """
         Unfreeze the repository
         """
-        print(f"\n🔓 UNFREEZING REPOSITORY: {self.repo_name}")
+        print(f"\n UNFREEZING REPOSITORY: {self.repo_name}")
         
         if not self.token:
-            print("⚠️ No GitHub token provided - simulation mode")
+            print(" No GitHub token provided - simulation mode")
             return
         
-        print(f"\n✅ Repository {self.repo_name} has been unfrozen")
+        print(f"\n Repository {self.repo_name} has been unfrozen")
 
 
 def main():

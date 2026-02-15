@@ -38,7 +38,7 @@ class SecurityContractValidator:
         Returns:
             True if all validations pass, False otherwise
         """
-        print("\n🔐 Security Contract Validation")
+        print("\n Security Contract Validation")
         print("=" * 50)
         
         # Check if security directory exists
@@ -206,10 +206,10 @@ class SecurityContractValidator:
     def _report(self):
         """Print validation report"""
         if not self.violations:
-            print("\n✅ All security contract checks passed!")
+            print("\n All security contract checks passed!")
             return
         
-        print(f"\n❌ Found {len(self.violations)} violations:")
+        print(f"\n Found {len(self.violations)} violations:")
         for v in self.violations:
             emoji = "🚫" if v["severity"] == "BLOCKING" else "⚠️"
             print(f"\n{emoji} {v['type']}")
@@ -218,7 +218,7 @@ class SecurityContractValidator:
         
         blocking = [v for v in self.violations if v["severity"] == "BLOCKING"]
         if blocking:
-            print(f"\n🚨 {len(blocking)} BLOCKING violations found")
+            print(f"\n {len(blocking)} BLOCKING violations found")
             print("Fix these before proceeding")
 
 

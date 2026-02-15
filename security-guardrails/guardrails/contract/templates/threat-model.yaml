@@ -1,34 +1,344 @@
-# threat-model.yaml
-# Auto-generated template - Customize for your repo
+# ======================================================================
+# THREAT MODEL - SECURITY RISK ASSESSMENT
+# ======================================================================
+# 
+# PURPOSE OF THIS FILE:
+# ---------------------
+# This is NOT just documentation - it's the FOUNDATION of your entire
+# security framework. Every guardrail exists because of threats listed here.
+#
+# HOW IT CONNECTS TO YOUR GUARDRAILS:
+# -----------------------------------
+# Guardrail #1 (Contract): Validates this file exists and is complete
+# Guardrail #4 (Secrets): Protects assets marked as 'credentials'
+# Guardrail #5 (Dependencies): Scans packages that could introduce threats
+# Guardrail #6 (SAST): Scans code in affected_components for vulnerabilities
+# Guardrail #7 (IaC): Ensures cloud resources protect assets by location
+#
+# Think of this as your "security source of truth" - everything else
+# in the framework refers back to this file.
+#
+# ======================================================================
+
 
 version: 1.0
+
+
 metadata:
-  name: "[REPO_NAME]"
-  description: "Description of what this repo does"
-  criticality: "medium"  # critical/high/medium/low
+  name: "[REPO_NAME]"  # Example: "payment-service", "auth-api"
+  
+  # Why: Brief explanation of what this system does
+  # Used by: New team members, auditors, incident responders
+  description: "Description of what this repo does"  # Example: "Handles user authentication and session management"
+  
+  # Why: How important is this system to the business?
+  # Used by: Prioritizes security efforts and response times
+  criticality: "medium"
+  
+  # Why: When was this assessment last updated?
+  # Used by: Guardrail #1 can warn if >90 days old
+  # Format: YYYY-MM-DD
   last_reviewed: 2024-01-01
 
-# What valuable data do you store?
+# ======================================================================
+# ASSETS - What Are We Protecting?
+# ======================================================================
+# Why: You can't protect what you don't know exists. This section
+#      inventories EVERY valuable thing in your system.
+#
+# CONNECTION TO GUARDRAILS:
+# -------------------------
+# - Assets marked as 'credentials' → Guardrail #4 (Secrets) scans for them
+# - Assets with location 'database' → Guardrail #7 (IaC) checks encryption
+# - Assets with sensitivity 'critical' → Prioritized in all scans
+#
+# Think of this as your "crown jewels" inventory.
+#
+# ======================================================================
 assets:
+  # Each asset is a separate list item with unique ID
   - id: "ASSET-001"
+    
+    # Why: Human-readable name for the asset
+    # Used by: Reports, dashboards, team communication
     name: "Example Data"
-    type: "pii"  # pci/pii/credentials/internal
+    
+    # Why: What kind of data is this? Determines compliance requirements
+    # Used by: Legal/compliance teams, determines which regulations apply
+    # Options:
+    # - pci: Payment card data (PCI-DSS compliance required)
+    # - pii: Personally Identifiable Information (GDPR/CCPA compliance)
+    # - credentials: Passwords, keys, tokens 
+    # - internal: Internal business data (standard protection)
+    # - public: Intended to be public (least protection)
+    type: "pii"
+    
+    # Why: How bad is it if this asset is compromised?
+    # Used by: Prioritizes security controls and incident response
+    # Options:
+    # - critical: Would cause severe business/financial/legal damage
+    # - high: Would cause significant damage
+    # - medium: Would cause moderate damage
+    # - low: Would cause minor damage
     sensitivity: "high"
+    
+    # Why: WHERE does this asset live? Physical/logical location
+    # Used by: 
+    # - Guardrail #7 (IaC): Ensures cloud resources at this location are secure
+    # - Incident response: Knows where to look during a breach
+    # - Compliance: Auditors verify location security
+    # Examples:
+    # - "database" - Stored in PostgreSQL, MySQL, MongoDB
+    # - "environment variables" - Runtime configuration
+    # - "file system" - Files on disk
+    # - "cache" - Redis, Memcached
+    # - "logs" - Application logs
+    # - "backup" - Backup storage
+    # - "secrets manager" - Vault, AWS Secrets Manager
     location: "database"
-    description: "Describe the data here"
+    
+    # Why: Detailed explanation of what this asset contains
+    # Used by: Anyone who needs to understand the asset without guessing
+    description: "Describe the data here"  # Example: "User email addresses, names, and password hashes"
 
-# How could someone attack?
+# ======================================================================
+# THREATS - How Could Someone Attack?
+# ======================================================================
+# Why: Identifies specific attack scenarios so we can build defenses
+#
+# CONNECTION TO GUARDRAILS:
+# -------------------------
+# - Each threat maps to specific guardrails that prevent it
+# - affected_components tells Guardrail #6 (SAST) where to scan
+# - mitigations with status 'planned' = security debt to track
+#
+# Think of this as your "enemy's playbook" - know their moves
+# so you can block them.
+#
+# ======================================================================
 threats:
+  # Each threat is a separate list item with unique ID
   - id: "THREAT-001"
-    name: "Example Threat"
-    description: "Describe the threat"
+    
+    # Why: Short, descriptive name for the threat
+    # Used by: Team communication, reports
+    name: "Example Threat"  # Example: "SQL Injection", "Data Leak", "Privilege Escalation"
+    
+    # Why: Detailed explanation of how the attack works
+    # Used by: Developers implementing fixes, security reviewers
+    description: "Describe the threat"  # Example: "Attacker injects malicious SQL through unsanitized input fields"
+    
+    # Why: Categorizes the threat using Microsoft's STRIDE model
+    # Used by: Ensures we cover ALL types of threats, not just obvious ones
+    # STRIDE Categories:
+    # - Spoofing: Impersonating something/someone else
+    # - Tampering: Modifying data or code
+    # - Repudiation: Denying actions (lack of audit trail)
+    # - Information Disclosure: Exposing data to unauthorized parties
+    # - Denial of Service: Making system unavailable
+    # - Elevation of Privilege: Gaining unauthorized access
+    # 
+    # Why this matters: If you have no threats in "Denial of Service",
+    #                    you might be missing DDoS protection!
     stride_category: "Tampering"
+    
+    # Why: Which parts of your system are vulnerable to this threat?
+    # Used by: 
+    # - Guardrail #6 (SAST): Scans these components for vulnerabilities
+    # - Guardrail #5 (Dependencies): Checks packages used by these components
+    # - Incident response: Knows which services to check during an attack
+    # 
+    # Common values (match your code structure):
+    # - "api" - REST/gRPC endpoints
+    # - "database" - Data storage layer
+    # - "auth" - Authentication service
+    # - "frontend" - UI/Client code
+    # - "worker" - Background jobs
+    # - "cache" - Caching layer
+    # - "file_storage" - File uploads
+    # - "third_party" - External services
     affected_components: ["api", "database"]
     
+    # ==================================================================
+    # MITIGATIONS - How Do We Prevent This?
+    # ==================================================================
+    # Why: Every threat MUST have at least one mitigation. If not,
+    #      you're accepting the risk (should be documented exception).
+    #
+    # CONNECTION TO GUARDRAILS:
+    # -------------------------
+    # - Each mitigation maps to ONE OR MORE guardrails
+    # - Example: "Input Validation" mitigation → Guardrail #6 (SAST)
+    # - Example: "Encryption" mitigation → Guardrail #7 (IaC)
+    # - Example: "No hardcoded secrets" → Guardrail #4 (Secrets)
+    #
+    # Think of mitigations as your "shields" against each attack.
+    #
+    # ==================================================================
     mitigations:
+      # Each mitigation is a separate list item with unique ID
       - id: "MIT-001"
+        
+        # Why: Short name for the protection measure
         name: "Input Validation"
-        description: "Validate all user input"
-        status: "planned"  # planned/implemented/verified
-        owner: "team-name"
+        
+        # Why: Detailed explanation of how this prevents the threat
+        description: "Validate all user input for type, length, format, and range"
+        
+        # Why: What's the implementation status?
+        # Used by: 
+        # - Guardrail #1: Can warn about unmitigated threats
+        # - Security metrics: Track progress over time
+        # - Auditors: Verify controls are in place
+        # Options:
+        # - "planned": We know we need it, not started (security debt)
+        # - "implemented": Code is written and deployed
+        # - "verified": Tested and confirmed effective
+        status: "planned"
+        
+        # Why: Who is responsible for implementing/fixing this?
+        # Used by: 
+        # - Pull request reviews (security-owners.yaml)
+        # - Accountability tracking
+        # Format: Use team names that match security-owners.yaml
+        owner: "team-name"  # Example: "backend-team", "security-team", "platform-team"
+        
+        # Why: When must this be done by?
+        # Used by: 
+        # - Project planning
+        # - Security debt tracking
+        # - Guardrail #1 can warn about overdue mitigations
+        # Format: YYYY-MM-DD
         due_date: "2024-02-01"
+
+# ======================================================================
+# ADDITIONAL THREATS TO CONSIDER (Uncomment and customize)
+# ======================================================================
+
+# THREAT: Secret Leakage
+# - id: "THREAT-002"
+#   name: "Secret Leakage"
+#   description: "Hardcoded credentials accidentally committed to repository"
+#   stride_category: "Information Disclosure"
+#   affected_components: ["all"]  # Can happen anywhere!
+#   mitigations:
+#     - id: "MIT-002"
+#       name: "Secrets Scanning"
+#       description: "Use gitleaks to detect secrets in code"
+#       status: "implemented"
+#       owner: "security-team"
+#       due_date: "2024-01-15"
+#     - id: "MIT-003"
+#       name: "Pre-commit Hooks"
+#       description: "Block commits with secrets before they reach GitHub"
+#       status: "implemented"
+#       owner: "platform-team"
+#       due_date: "2024-01-15"
+# 
+# CONNECTION: This threat maps DIRECTLY to Guardrail #4 (Secrets Protection)
+
+# THREAT: Vulnerable Dependencies
+# - id: "THREAT-003"
+#   name: "Vulnerable Dependencies"
+#   description: "Third-party libraries with known CVEs"
+#   stride_category: "Tampering"
+#   affected_components: ["all"]
+#   mitigations:
+#     - id: "MIT-004"
+#       name: "Dependency Scanning"
+#       description: "Scan dependencies for known vulnerabilities"
+#       status: "implemented"
+#       owner: "security-team"
+#       due_date: "2024-01-15"
+#     - id: "MIT-005"
+#       name: "Auto-update Policy"
+#       description: "Automatically update vulnerable packages when fixes available"
+#       status: "planned"
+#       owner: "platform-team"
+#       due_date: "2024-03-01"
+# 
+# CONNECTION: This threat maps to Guardrail #5 (Dependency Security)
+
+# THREAT: Cloud Misconfiguration
+# - id: "THREAT-004"
+#   name: "Cloud Misconfiguration"
+#   description: "Public S3 buckets, open security groups, unencrypted storage"
+#   stride_category: "Information Disclosure"
+#   affected_components: ["terraform", "cloudformation", "kubernetes"]
+#   mitigations:
+#     - id: "MIT-006"
+#       name: "IaC Scanning"
+#       description: "Scan infrastructure code for misconfigurations"
+#       status: "implemented"
+#       owner: "platform-team"
+#       due_date: "2024-01-15"
+# 
+# CONNECTION: This threat maps to Guardrail #7 (IaC Security)
+
+# THREAT: AI-Generated Vulnerabilities
+# - id: "THREAT-005"
+#   name: "AI-Generated Vulnerabilities"
+#   description: "AI coding assistants may introduce security flaws"
+#   stride_category: "Tampering"
+#   affected_components: ["all"]
+#   mitigations:
+#     - id: "MIT-007"
+#       name: "AI Code Detection"
+#       description: "Flag AI-generated code for extra review"
+#       status: "implemented"
+#       owner: "security-team"
+#       due_date: "2024-01-15"
+#     - id: "MIT-008"
+#       name: "Enhanced SAST"
+#       description: "Run stricter SAST rules on AI-generated code"
+#       status: "planned"
+#       owner: "security-team"
+#       due_date: "2024-02-01"
+# 
+# CONNECTION: This threat maps to Guardrail #2 (AI Detection)
+
+# ======================================================================
+# HOW TO USE THIS FILE
+# ======================================================================
+#
+# 1. START WITH ASSETS:
+#    - List EVERY piece of valuable data in your system
+#    - Be specific about locations and sensitivity
+#    - This drives everything else
+#
+# 2. BRAINSTORM THREATS:
+#    - For each asset, ask "How could this be compromised?"
+#    - Use STRIDE to ensure you cover all angles
+#    - Don't worry about mitigations yet
+#
+# 3. ADD MITIGATIONS:
+#    - For each threat, list at least one control
+#    - Map to existing guardrails where possible
+#    - Track 'planned' items as security debt
+#
+# 4. REVIEW REGULARLY:
+#    - Update last_reviewed date
+#    - Add new threats as system evolves
+#    - Update status of mitigations
+#
+# 5. CONNECT TO GUARDRAILS:
+#    - Ensure every threat is covered by at least one guardrail
+#    - If a threat has no guardrail → You need a new guardrail!
+#    - If a guardrail doesn't map to any threat → Is it necessary?
+#
+# ======================================================================
+# VALIDATION CHECKLIST (Guardrail #1 checks these)
+# ======================================================================
+#
+# ✅ File exists in /security/threat-model.yaml
+# ✅ Version is specified
+# ✅ Metadata has name, description, criticality, last_reviewed
+# ✅ At least one asset defined 
+# ✅ Each asset has id, name, type, sensitivity, location
+# ✅ At least one threat defined
+# ✅ Each threat has id, name, description, stride_category
+# ✅ Each threat has at least one mitigation
+# ✅ Each mitigation has id, name, description, status
+# ✅ No YAML syntax errors
+#
+# ======================================================================

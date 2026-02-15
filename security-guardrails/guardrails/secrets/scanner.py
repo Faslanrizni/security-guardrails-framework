@@ -2,6 +2,7 @@
 """
 Secrets Scanner
 Detects hardcoded secrets in code files
+Using winget
 """
 
 import os
@@ -57,7 +58,7 @@ class SecretsScanner:
         """
         Scan files for secrets
         """
-        print("\n🔐 Scanning for secrets...")
+        print("\n Scanning for secrets...")
         
         if files is None:
             files = self._get_all_files()
@@ -72,11 +73,11 @@ class SecretsScanner:
         
         # Report findings
         if self.findings:
-            print(f"\n❌ Found {len(self.findings)} secrets:")
+            print(f"\n Found {len(self.findings)} secrets:")
             for f in self.findings:
                 print(f"  - {f['file']}:{f['line']} - {f['type']}")
         else:
-            print("✅ No secrets detected")
+            print(" No secrets detected")
         
         return self.findings
     
@@ -125,7 +126,7 @@ class SecretsScanner:
                                 'severity': 'BLOCKING'
                             })
         except Exception as e:
-            print(f"  ⚠️ Error scanning {file_path}: {e}")
+            print(f"   Error scanning {file_path}: {e}")
     
     def _is_false_positive(self, line: str, file_path: str, pattern_type: str, matched_text: str) -> bool:
         """Check if finding is likely false positive"""
@@ -190,7 +191,7 @@ def main():
     findings = scanner.scan(args.files)
     
     if args.block and scanner.should_block():
-        print("\n🚨 SECRETS DETECTED - BLOCKING")
+        print("\n SECRETS DETECTED - BLOCKING")
         sys.exit(1)
     
     sys.exit(0)
