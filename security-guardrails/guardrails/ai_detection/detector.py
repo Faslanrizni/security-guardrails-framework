@@ -66,7 +66,7 @@ class AICodeDetector:
             '.py', '.js', '.ts', '.java', '.go', '.rb',
             '.php', '.c', '.cpp', '.h', '.cs', '.swift'
         ]
-        
+    
     def scan_commit(self, commit_hash: str = "HEAD") -> List[Dict]:
         """
         Scan the latest commit for AI-generated code
@@ -78,6 +78,8 @@ class AICodeDetector:
         if not commit_info:
             print("  ⚠️ Could not get commit info")
             return []
+        
+        print(f"  🔍 Debug: Commit message: {commit_info['message'][:50]}...")
         
         # Analyze commit message
         message_score = self._analyze_commit_message(commit_info['message'])
@@ -92,19 +94,30 @@ class AICodeDetector:
         # Get changed files
         files = self._get_changed_files(commit_hash)
         
+        if not files:
+            print("  ⚠️ No files found in commit")
+            return []
+        
+        print(f"  🔍 Debug: Scanning {len(files)} files...")
+        
         for file_path in files:
+            print(f"  🔍 Debug: Checking file: {file_path}")
+            
             # Check if file should be scanned
             if not self._should_scan_file(file_path):
+                print(f"  🔍 Debug: Skipping {file_path} (extension not in scan list)")
                 continue
                 
             full_path = self.repo_path / file_path
             if not full_path.exists():
+                print(f"  🔍 Debug: File {file_path} doesn't exist")
                 continue
             
             # Analyze file content
             file_score, indicators = self._analyze_file_content(full_path)
+            print(f"  🔍 Debug: File score: {file_score}")
             
-            if file_score > 0.4:  # Threshold for flagging
+            if file_score > 0.4:
                 self.findings.append({
                     'file': file_path,
                     'type': 'file_content',
@@ -113,7 +126,6 @@ class AICodeDetector:
                     'requires_review': file_score > 0.7
                 })
         
-        # Report findings
         self._print_report()
         return self.findings
     
@@ -144,6 +156,8 @@ class AICodeDetector:
         """Get files changed in commit"""
         try:
             import subprocess
+            print(f"  🔍 Debug: Getting files for commit {commit_hash}")
+            
             result = subprocess.run(
                 ['git', 'diff-tree', '--no-commit-id', '--name-only', '-r', commit_hash],
                 cwd=self.repo_path,
@@ -151,8 +165,13 @@ class AICodeDetector:
                 text=True,
                 check=True
             )
-            return result.stdout.strip().split('\n') if result.stdout.strip() else []
-        except:
+            
+            files = result.stdout.strip().split('\n') if result.stdout.strip() else []
+            print(f"  🔍 Debug: Found {len(files)} files: {files}")
+            
+            return files
+        except Exception as e:
+            print(f"  🔍 Debug: Error getting files: {e}")
             return []
     
     def _analyze_commit_message(self, message: str) -> float:
