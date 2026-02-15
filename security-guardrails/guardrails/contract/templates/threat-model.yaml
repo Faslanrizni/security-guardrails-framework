@@ -1,0 +1,34 @@
+# threat-model.yaml
+# Auto-generated template - Customize for your repo
+
+version: 1.0
+metadata:
+  name: "[REPO_NAME]"
+  description: "Description of what this repo does"
+  criticality: "medium"  # critical/high/medium/low
+  last_reviewed: 2024-01-01
+
+# What valuable data do you store?
+assets:
+  - id: "ASSET-001"
+    name: "Example Data"
+    type: "pii"  # pci/pii/credentials/internal
+    sensitivity: "high"
+    location: "database"
+    description: "Describe the data here"
+
+# How could someone attack?
+threats:
+  - id: "THREAT-001"
+    name: "Example Threat"
+    description: "Describe the threat"
+    stride_category: "Tampering"
+    affected_components: ["api", "database"]
+    
+    mitigations:
+      - id: "MIT-001"
+        name: "Input Validation"
+        description: "Validate all user input"
+        status: "planned"  # planned/implemented/verified
+        owner: "team-name"
+        due_date: "2024-02-01"

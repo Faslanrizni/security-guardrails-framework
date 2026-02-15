@@ -1,0 +1,21 @@
+# security-owners.yaml
+# Who is responsible for security reviews
+
+version: 1.0
+
+owners:
+  security-team:
+    team: "@org/security-team"
+    paths:
+      - "*"  # Review everything
+
+critical_paths:
+  - path: "auth/"
+    reason: "Authentication bypass risk"
+    required_approvers:
+      - "@org/security-team"
+  
+  - path: "payment/"
+    reason: "Financial data exposure"
+    required_approvers:
+      - "@org/security-team"
