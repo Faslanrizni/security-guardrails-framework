@@ -1,0 +1,63 @@
+Generate a REST API endpoint with these security requirements:
+
+CONTEXT:
+- Language: {language} (Python/Node.js/Go/Java)
+- Framework: {framework} (Flask/Express/Gin/Spring)
+- Endpoint: {endpoint} (/api/users)
+- Method: {method} (GET/POST/PUT/DELETE)
+
+SECURITY REQUIREMENTS (MANDATORY):
+
+1. Authentication:
+   - Verify JWT/API key before processing
+   - Check token validity and expiration
+   - Extract user identity from token
+
+2. Authorization:
+   - Verify user has required permissions
+   - Check resource ownership
+   - Implement role-based access control
+
+3. Input Validation:
+   - Validate ALL parameters (type, length, format)
+   - Use schema validation (Pydantic/Joi/Zod)
+   - Sanitize inputs to prevent XSS
+
+4. SQL Safety:
+   - Use parameterized queries or ORM
+   - NO string concatenation
+   - Escape user input properly
+
+5. Rate Limiting:
+   - Add rate limiting per user/IP
+   - Configure appropriate limits
+   - Return 429 status when limited
+
+6. Error Handling:
+   - Return generic error messages to client
+   - Log detailed errors internally
+   - No stack traces exposed
+
+7. Timeouts:
+   - Set database query timeouts
+   - Set external API timeouts
+   - Set total request timeout
+
+8. Logging:
+   - Log who accessed what
+   - Log timestamp and IP
+   - Log success/failure
+   - No PII in logs
+
+9. Response Safety:
+   - Never return passwords/tokens
+   - Never return sensitive PII
+   - Sanitize output data
+
+10. Security Headers:
+    - Content-Security-Policy
+    - X-Content-Type-Options
+    - X-Frame-Options
+
+OUTPUT FORMAT:
+Provide complete endpoint code with security comments explaining each protection.
