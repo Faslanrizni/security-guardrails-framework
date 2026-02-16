@@ -1,21 +1,194 @@
-# security-owners.yaml
-# Who is responsible for security reviews
+# ======================================================================
+# SECURITY OWNERS - Who Is Responsible for Security Reviews
+# ======================================================================
+#
+# PURPOSE OF THIS FILE:
+# ---------------------
+# This file defines WHO must review changes to different parts of your
+# codebase. It's your "accountability as code" - no more "I didn't know
+# I needed a security review" excuses.
+#
+# HOW IT CONNECTS TO YOUR GUARDRAILS:
+# -----------------------------------
+# Guardrail #1 (Contract): Validates this file exists and is properly formatted
+# Guardrail #10 (No Silent Failures): CI/CD blocks merges if required approvers missing
+#
+# Think of this as your security team's "territory map" - showing exactly
+# which files they need to review and when.
+#
+# ======================================================================
 
+# ======================================================================
+# VERSION CONTROL
+# ======================================================================
+# Why: Tracks changes to ownership rules over time
+# Used by: Guardrail #1 validates version exists
+# Format: Increment when you make significant changes
 version: 1.0
 
+# ======================================================================
+# OWNERS - Default Reviewers
+# ======================================================================
+# Why: Defines which teams are responsible for reviewing code changes
+# Used by: 
+#   - GitHub's CODEOWNERS file (auto-generated from this)
+#   - PR review requests (auto-assigns reviewers)
+#   - CI/CD enforcement (blocks if missing reviews)
+#
+# RULE: Every file in the repo must be owned by at least one team
+#       The most specific path match wins
+#
+# ======================================================================
 owners:
+  # Each owner is a named team with their responsibilities
   security-team:
+    # Why: GitHub team name for @mentions and review requests
+    # Format: "@org/team-name" - must match GitHub organization
     team: "@org/security-team"
+    
+    # Why: Which file paths this team owns
+    # Format: 
+    #   - "*" = everything (catch-all)
+    #   - "src/" = specific directory
+    #   - "**/*.js" = all JavaScript files anywhere
+    #   - "auth/**" = everything in auth directory and subdirectories
+    #
+    # ORDER MATTERS: More specific paths should come first
+    #                The last matching pattern wins
     paths:
-      - "*"  # Review everything
+      - "*"  # This team owns EVERYTHING as default
+      
+  # You can add more teams as needed:
+  # backend-team:
+  #   team: "@org/backend"
+  #   paths:
+  #     - "src/api/**"
+  #     - "src/services/**"
+  #
+  # frontend-team:
+  #   team: "@org/frontend"
+  #   paths:
+  #     - "src/ui/**"
+  #     - "src/components/**"
+  #
+  # platform-team:
+  #   team: "@org/platform"
+  #   paths:
+  #     - "deploy/**"
+  #     - "terraform/**"
+  #     - "Dockerfile"
+  #     - "k8s/**"
 
+# ======================================================================
+# CRITICAL PATHS - High-Risk Areas Requiring Extra Protection
+# ======================================================================
+# Why: Some parts of the codebase are so sensitive that they need
+#      mandatory security review BEFORE merging. No exceptions.
+#
+# CONNECTION TO GUARDRAILS:
+# -------------------------
+# - Guardrail #10: Blocks PRs that modify these paths without approval
+# - Guardrail #1: Validates this list exists and is populated
+#
+# Think of these as your "no-fly zones" - changes here require 
+# security team clearance before takeoff.
+#
+# ======================================================================
 critical_paths:
+  # Each critical path is a separate list item
   - path: "auth/"
-    reason: "Authentication bypass risk"
+    # Why: Specific reason this path is critical
+    # Used by: Developers to understand why they need review
+    #          Auditors to verify risk assessment
+    reason: "Authentication bypass risk - changes here could let attackers impersonate users"
+    
+    # Why: Who MUST approve changes to this path
+    # Used by: CI/CD to check PR approvals
+    # Format: Array of GitHub team names (must match owners format)
+    # REQUIREMENT: At least ONE of these approvers must review
     required_approvers:
-      - "@org/security-team"
+      - "@org/security-team"  # Security must always review auth changes
+      # You can add multiple approvers:
+      # - "@org/auth-specialists"  # Auth experts
+      # - "@org/backend-team"       # Backend owners
   
   - path: "payment/"
-    reason: "Financial data exposure"
+    reason: "Financial data exposure - changes here could leak payment info or alter transactions"
     required_approvers:
       - "@org/security-team"
+      # Payment might need additional reviewers:
+      # - "@org/finance-team"    # Financial compliance
+      # - "@org/payment-team"    # Payment specialists
+
+
+
+# ======================================================================
+# HOW TO USE THIS FILE
+# ======================================================================
+#
+# 1. IDENTIFY YOUR TEAMS:
+#    - List all teams that need to review code
+#    - Use GitHub team names exactly as they appear in your org
+#    - Start with security-team owning everything (*)
+#
+# 2. MAP CRITICAL PATHS:
+#    - Walk through your codebase directory by directory
+#    - Ask "What's the worst that could happen if this code is wrong?"
+#    - If answer is "bad" → it's a critical path
+#
+# 3. COMMON CRITICAL PATHS:
+#    - Authentication (auth/, login/, sessions/)
+#    - Authorization (rbac/, permissions/)
+#    - Payment processing (payment/, billing/, checkout/)
+#    - Cryptography (crypto/, encryption/, signing/)
+#    - Secrets management (secrets/, vault/)
+#    - Admin interfaces (admin/, manage/)
+#    - User data exports (exports/, reports/)
+#    - Database migrations (migrations/, schema/)
+#    - Infrastructure config (terraform/, cloudformation/)
+#    - CI/CD pipelines (.github/workflows/, .gitlab-ci.yml)
+#
+# 4. DETERMINE REQUIRED APPROVERS:
+#    - Security team should approve MOST critical paths
+#    - Add domain experts (auth-team, crypto-team) for specialized code
+#    - Minimum 1 approver, but critical paths often need 2+
+#
+# ======================================================================
+# HOW CI/CD USES THIS FILE (Guardrail #10 Enforcement)
+# ======================================================================
+#
+# When someone opens a Pull Request:
+#
+# 1. CI detects which files changed
+#    $ git diff --name-only main...HEAD
+#
+# 2. For each changed file, check if it matches any critical_path
+#    if file.startswith("auth/") → CRITICAL PATH
+#
+# 3. Check PR approvals against required_approvers
+#    approvals = get_pr_reviews()
+#    if "@org/security-team" not in approvals:
+#        BLOCK MERGE
+#        COMMENT "Security team must review auth changes"
+#
+# 4. If all required approvals present → ALLOW MERGE
+#
+# This is AUTOMATED, not manual tracking!
+#
+
+#
+# ======================================================================
+# EXAMPLE: What Happens When You Change auth/login.js
+# ======================================================================
+#
+# File changed: auth/login.js
+#
+# Critical path matched: "auth/" (reason: "Authentication bypass risk")
+#
+# Required approvers: ["@org/security-team"]
+#
+# CI checks: Has @org/security-team approved this PR?
+#   -  Yes → PR can merge
+#   -  No → PR BLOCKED with message:
+#     "Security review required: Changes to auth/ need approval from @org/security-team"
+#

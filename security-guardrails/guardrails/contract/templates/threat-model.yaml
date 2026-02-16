@@ -7,28 +7,23 @@
 # This is NOT just documentation - it's the FOUNDATION of your entire
 # security framework. Every guardrail exists because of threats listed here.
 #
-# HOW IT CONNECTS TO YOUR GUARDRAILS:
+# HOW IT CONNECTS TO GUARDRAILS:
 # -----------------------------------
 # Guardrail #1 (Contract): Validates this file exists and is complete
 # Guardrail #4 (Secrets): Protects assets marked as 'credentials'
 # Guardrail #5 (Dependencies): Scans packages that could introduce threats
 # Guardrail #6 (SAST): Scans code in affected_components for vulnerabilities
 # Guardrail #7 (IaC): Ensures cloud resources protect assets by location
-#
-# Think of this as your "security source of truth" - everything else
-# in the framework refers back to this file.
-#
-# ======================================================================
+
 
 
 version: 1.0
 
 
 metadata:
-  name: "[REPO_NAME]"  # Example: "payment-service", "auth-api"
+  name: "[REPO_NAME]" 
   
-  # Why: Brief explanation of what this system does
-  # Used by: New team members, auditors, incident responders
+ 
   description: "Description of what this repo does"  # Example: "Handles user authentication and session management"
   
   # Why: How important is this system to the business?
@@ -211,91 +206,9 @@ threats:
         # Format: YYYY-MM-DD
         due_date: "2024-02-01"
 
-# ======================================================================
-# ADDITIONAL THREATS TO CONSIDER (Uncomment and customize)
-# ======================================================================
 
-# THREAT: Secret Leakage
-# - id: "THREAT-002"
-#   name: "Secret Leakage"
-#   description: "Hardcoded credentials accidentally committed to repository"
-#   stride_category: "Information Disclosure"
-#   affected_components: ["all"]  # Can happen anywhere!
-#   mitigations:
-#     - id: "MIT-002"
-#       name: "Secrets Scanning"
-#       description: "Use gitleaks to detect secrets in code"
-#       status: "implemented"
-#       owner: "security-team"
-#       due_date: "2024-01-15"
-#     - id: "MIT-003"
-#       name: "Pre-commit Hooks"
-#       description: "Block commits with secrets before they reach GitHub"
-#       status: "implemented"
-#       owner: "platform-team"
-#       due_date: "2024-01-15"
-# 
-# CONNECTION: This threat maps DIRECTLY to Guardrail #4 (Secrets Protection)
 
-# THREAT: Vulnerable Dependencies
-# - id: "THREAT-003"
-#   name: "Vulnerable Dependencies"
-#   description: "Third-party libraries with known CVEs"
-#   stride_category: "Tampering"
-#   affected_components: ["all"]
-#   mitigations:
-#     - id: "MIT-004"
-#       name: "Dependency Scanning"
-#       description: "Scan dependencies for known vulnerabilities"
-#       status: "implemented"
-#       owner: "security-team"
-#       due_date: "2024-01-15"
-#     - id: "MIT-005"
-#       name: "Auto-update Policy"
-#       description: "Automatically update vulnerable packages when fixes available"
-#       status: "planned"
-#       owner: "platform-team"
-#       due_date: "2024-03-01"
-# 
-# CONNECTION: This threat maps to Guardrail #5 (Dependency Security)
 
-# THREAT: Cloud Misconfiguration
-# - id: "THREAT-004"
-#   name: "Cloud Misconfiguration"
-#   description: "Public S3 buckets, open security groups, unencrypted storage"
-#   stride_category: "Information Disclosure"
-#   affected_components: ["terraform", "cloudformation", "kubernetes"]
-#   mitigations:
-#     - id: "MIT-006"
-#       name: "IaC Scanning"
-#       description: "Scan infrastructure code for misconfigurations"
-#       status: "implemented"
-#       owner: "platform-team"
-#       due_date: "2024-01-15"
-# 
-# CONNECTION: This threat maps to Guardrail #7 (IaC Security)
-
-# THREAT: AI-Generated Vulnerabilities
-# - id: "THREAT-005"
-#   name: "AI-Generated Vulnerabilities"
-#   description: "AI coding assistants may introduce security flaws"
-#   stride_category: "Tampering"
-#   affected_components: ["all"]
-#   mitigations:
-#     - id: "MIT-007"
-#       name: "AI Code Detection"
-#       description: "Flag AI-generated code for extra review"
-#       status: "implemented"
-#       owner: "security-team"
-#       due_date: "2024-01-15"
-#     - id: "MIT-008"
-#       name: "Enhanced SAST"
-#       description: "Run stricter SAST rules on AI-generated code"
-#       status: "planned"
-#       owner: "security-team"
-#       due_date: "2024-02-01"
-# 
-# CONNECTION: This threat maps to Guardrail #2 (AI Detection)
 
 # ======================================================================
 # HOW TO USE THIS FILE
@@ -326,19 +239,3 @@ threats:
 #    - If a threat has no guardrail → You need a new guardrail!
 #    - If a guardrail doesn't map to any threat → Is it necessary?
 #
-# ======================================================================
-# VALIDATION CHECKLIST (Guardrail #1 checks these)
-# ======================================================================
-#
-# ✅ File exists in /security/threat-model.yaml
-# ✅ Version is specified
-# ✅ Metadata has name, description, criticality, last_reviewed
-# ✅ At least one asset defined 
-# ✅ Each asset has id, name, type, sensitivity, location
-# ✅ At least one threat defined
-# ✅ Each threat has id, name, description, stride_category
-# ✅ Each threat has at least one mitigation
-# ✅ Each mitigation has id, name, description, status
-# ✅ No YAML syntax errors
-#
-# ======================================================================
