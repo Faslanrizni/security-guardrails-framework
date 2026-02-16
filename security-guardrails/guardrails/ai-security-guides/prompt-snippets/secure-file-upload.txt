@@ -1,0 +1,64 @@
+Generate secure file upload code with these requirements:
+
+CONTEXT:
+- Language: {language}
+- Framework: {framework}
+- Allowed types: {types} (images, PDFs, etc.)
+- Max size: {size} (e.g., 10MB)
+
+SECURITY REQUIREMENTS (MANDATORY):
+
+1. File Type Validation (MULTIPLE LAYERS):
+   - Check file extension (whitelist only)
+   - Verify MIME type using magic bytes (not just Content-Type)
+   - For images: verify they're actually images (PIL/ImageMagick)
+   - Block double extensions (file.php.jpg)
+
+2. Size Limits:
+   - Enforce maximum file size
+   - Check before saving to disk
+   - Consider total upload size for multiple files
+
+3. Virus Scanning:
+   - Integrate with ClamAV or similar
+   - Scan before saving
+   - Quarantine suspicious files
+
+4. Secure Storage:
+   - Store outside webroot (not in public/)
+   - Use random filenames (UUID, never user-provided)
+   - Maintain original name mapping in database
+   - Separate by user ID in storage
+
+5. Access Control:
+   - Authenticated users only
+   - Verify user owns the upload
+   - Rate limit uploads per user
+
+6. File Processing:
+   - For images: strip metadata (EXIF)
+   - For images: recompress to remove malicious payloads
+   - For PDFs: sanitize JavaScript
+
+7. Path Traversal Prevention:
+   - NEVER trust user-provided paths
+   - Use secure join operations
+   - Validate all path components
+
+8. Logging:
+   - Log all uploads (user, filename, size, timestamp)
+   - Log failed upload attempts
+   - Log virus detection
+
+9. Response:
+   - Return safe file info (ID, safe URL)
+   - Never return server paths
+   - Never return original filename in URL
+
+10. Cleanup:
+    - Temporary file deletion
+    - Orphaned file cleanup
+    - Expired file removal
+
+OUTPUT FORMAT:
+Complete upload handler with all security layers and comments.

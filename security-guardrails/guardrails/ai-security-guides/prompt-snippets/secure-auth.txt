@@ -1,0 +1,62 @@
+Generate authentication code with these security requirements:
+
+CONTEXT:
+- Language: {language}
+- Framework: {framework}
+- Auth type: {type} (JWT/Session/OAuth2)
+
+SECURITY REQUIREMENTS (MANDATORY):
+
+1. Password Storage:
+   - Use bcrypt (cost factor 12+) or Argon2id
+   - NEVER store plaintext passwords
+   - Salt automatically (bcrypt handles this)
+
+2. Login Endpoint:
+   - Rate limiting (5 attempts per minute)
+   - Account lockout after 5 failed attempts
+   - Log all attempts (success/failure)
+   - Return generic messages ("Invalid credentials")
+
+3. Session Management:
+   - Secure, HTTP-only cookies
+   - Session timeout (30 minutes)
+   - Regenerate session ID after login
+   - Store session securely
+
+4. JWT (if applicable):
+   - Strong secret (min 32 bytes, from env)
+   - Short expiration (15-60 minutes)
+   - Include minimal claims (sub, exp, role)
+   - Use RS256 not HS256 for services
+   - Implement token refresh mechanism
+
+5. Password Reset:
+   - Secure tokens (cryptographically random)
+   - Short expiration (15 minutes)
+   - One-time use only
+   - Email the token, never expose in response
+
+6. MFA Support (if requested):
+   - TOTP (Google Authenticator compatible)
+   - Generate backup codes
+   - Remember device option (secure)
+
+7. Logout:
+   - Invalidate session/token
+   - Clear secure cookies
+   - Blacklist tokens if needed
+
+8. Registration:
+   - Email verification required
+   - Strong password policy
+   - Rate limit registration
+
+9. Security Headers:
+   - Strict-Transport-Security (HSTS)
+   - Content-Security-Policy
+   - X-Frame-Options
+   - X-Content-Type-Options
+
+OUTPUT FORMAT:
+Complete auth implementation with all security features and comments.
