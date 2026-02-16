@@ -1,0 +1,160 @@
+# ======================================================================
+# ALLOWED DEPENDENCIES POLICY
+# ======================================================================
+# This file defines which third-party packages are approved for use.
+# It is both human-readable AND machine-enforced.
+#
+# ENFORCEMENT FLOW:
+# 1. Dependency scanner detects new package
+# 2. Guardrails checks against this file
+# 3. If not listed →  Build fails with approval instructions
+#
+# NO SLACK. NO JIRA. NO TRIBAL KNOWLEDGE.
+# ======================================================================
+
+# ======================================================================
+# GO LANGUAGE
+# ======================================================================
+go:
+  # Packages that are pre-approved for use
+  allowed:
+    # Web frameworks
+    - github.com/gin-gonic/gin
+    - github.com/go-chi/chi
+    - github.com/labstack/echo/v4
+    
+    # Database drivers
+    - github.com/jackc/pgx
+    - github.com/go-sql-driver/mysql
+    - github.com/lib/pq
+    
+    # Cryptography (golang.org/x/crypto is the standard)
+    - golang.org/x/crypto
+    
+    # Utilities
+    - github.com/spf13/viper      # Config management
+    - github.com/joho/godotenv     # Env file loading
+    - github.com/sirupsen/logrus   # Logging
+    - go.uber.org/zap              # Structured logging
+    
+    # Testing
+    - github.com/stretchr/testify
+    - github.com/golang/mock
+
+  # Packages that are explicitly forbidden
+  blocked:
+    - github.com/dgrijalva/jwt-go          # Unmaintained, use github.com/golang-jwt/jwt
+    - github.com/gorilla/context            # Deprecated
+    - github.com/davecgh/go-spew/spew       # Debug only, not for production
+    - github.com/pkg/errors                 # Use native errors
+
+  # Packages requiring security review (AI code restriction)
+  requires_review:
+    - github.com/aws/aws-sdk-go              # Large attack surface
+    - github.com/google/go-containerregistry  # Container operations
+    - github.com/hashicorp/vault              # Secret management
+
+# ======================================================================
+# JAVASCRIPT / NODE.JS
+# ======================================================================
+js:
+  allowed:
+    # Frameworks
+    - express
+    - fastify
+    - nestjs
+    
+    # Validation
+    - zod
+    - joi
+    - yup
+    
+    # HTTP clients
+    - axios
+    - node-fetch
+    
+    # Utilities
+    - lodash
+    - date-fns
+    - dotenv
+    
+    # Testing
+    - jest
+    - vitest
+
+
+  blocked:
+    - request                           # Deprecated
+    - left-pad                          # Trivial, use native
+    - is-positive                       # Unnecessary micro-package
+    - colors.js                         # Supply chain attack history
+    - event-stream                       # Known backdoor incident
+
+  requires_review:
+    - puppeteer                          # Browser automation
+    - playwright                          # Browser automation
+    - puppeteer-core                       # Browser automation
+    - crypto-js                            # Client-side crypto
+
+# ======================================================================
+# PYTHON
+# ======================================================================
+python:
+  allowed:
+    # Web frameworks
+    - django
+    - flask
+    - fastapi
+    
+    # Database
+    - sqlalchemy
+    - psycopg2-binary
+    - pymongo
+    
+    # Validation
+    - pydantic
+    - marshmallow
+    
+    # Utilities
+    - python-dotenv
+    - requests
+    - click
+    
+    # Testing
+    - pytest
+    - pytest-cov
+    - mock
+
+  blocked:
+    - pycrypto                    # Unmaintained, use pycryptodome
+    - md5                          # Use hashlib
+    - pickle                       # Insecure deserialization
+    - yaml/load                     # Use safe_load
+
+  requires_review:
+    - tensorflow                    # ML framework
+    - torch                         # ML framework
+    - cryptography                   # Crypto operations
+    - boto3                          # AWS SDK
+
+# ======================================================================
+# AI CODE SPECIAL RESTRICTIONS
+# ======================================================================
+# AI-generated code often pulls outdated/unmaintained packages
+ai_code:
+  dependency_restrictions:
+    # Strict mode: AI code cannot introduce new dependencies without approval
+    strict_mode: true
+    
+    # AI cannot use these patterns (outdated/deprecated)
+    blocked_patterns:
+      - "*jwt*"           # Often pulls wrong JWT lib
+      - "*crypto*"        # Often uses weak crypto
+      - "*md5*"           # Weak hashing
+      - "*sha1*"          # Weak hashing
+      - "*deprecated*"    # Self-explanatory
+    
+    # AI must use approved versions
+    version_requirements:
+      - "*"  # All packages must use latest major version
+
