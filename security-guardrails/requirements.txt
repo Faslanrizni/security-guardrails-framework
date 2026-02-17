@@ -4,7 +4,7 @@ requests==2.31.0
 github3.py==4.0.1
 python-dotenv==1.0.0
 
-# Security tools (will be installed)
+
 # These are installed via system, not pip
 # semgrep
 # gitleaks
@@ -20,7 +20,7 @@ black==23.12.0
 flake8==6.1.0
 mypy==1.7.0
 
-# python tools/security-guardrails/guardrails/contract/validator.py
-# python tools/security-guardrails/guardrails/secrets/scanner.py
-# 
-# 
+# python3 tools/security-guardrails/guardrails/contract/validator.py
+# python3 tools/security-guardrails/guardrails/secrets/scanner.py
+# python3 tools/security-guardrails/guardrails/ai_detection/detector.py
+# python3 tools/security-guardrails/guardrails/dependencies/allowed_enforcer.py
